@@ -9,49 +9,54 @@ import {
   Alert
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import SoundService, {START_WORK, START_BREAK} from './sound.service';
 
-const START_BREAK = 'START_BREAK';
-const START_WORK = 'START_WORK';
 
 const App: () => Node = () => {
 
   useEffect(() => {
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      showAlert(remoteMessage);
+    });
+
+    messaging().getInitialNotification().then(remoteMessage => {
+      showAlert(remoteMessage);
+    });
+
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      if (remoteMessage?.notification?.title === START_BREAK 
-        || remoteMessage?.notification?.title === START_WORK) {
-        startMusic();
+      console.log("Received Message: ", JSON.stringify(remoteMessage));
+      if (remoteMessage?.notification?.title === START_BREAK) {
+        SoundService.playSound(START_BREAK);
+        showAlert(remoteMessage);
+      } else if (remoteMessage?.notification?.title === START_WORK) {
+        SoundService.playSound(START_WORK);
         showAlert(remoteMessage);
       }
     });
+
     return unsubscribe;
   }, []);
 
-  const startMusic = () => {
-    
-  }
-
   const showAlert = (remoteMessage) => {
-    Alert.alert(
-      remoteMessage?.notification?.title, 
-      remoteMessage?.notification?.body,
-      [
-        {
-          text: "Got it",
-          onPress: killAlarm
-        }    
-      ]
-    );
+    if (remoteMessage) {
+      Alert.alert(
+        remoteMessage?.notification?.title, 
+        remoteMessage?.notification?.body,
+        [
+          {
+            text: "Got it",
+            onPress: SoundService.killSound
+          }    
+        ]
+      );
+    }
   };
-
-  // Stop music
-  const killAlarm = () => {
-    console.log("Alarm killed");
-  }
   
   return (
     <SafeAreaView>
       <StatusBar barStyle={'dark-content'} />
-      <View>
+      <View style={{height: '100%', width: '100%', backgroundColor: 'white'}}>
         <Text>Hewo</Text>
       </View>
     </SafeAreaView>
