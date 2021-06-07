@@ -56,13 +56,21 @@ const App: () => Node = () => {
   return (
     <SafeAreaView>
       <StatusBar barStyle={'dark-content'} />
-      <View style={{height: '100%', width: '100%', backgroundColor: 'white'}}>
+      <View style={styles.container}>
         <Text>Hewo</Text>
       </View>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    height: '100%', 
+    width: '100%', 
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+});
 
 export default App;
