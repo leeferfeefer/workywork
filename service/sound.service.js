@@ -8,7 +8,7 @@ const start = async (sound) => {
     await TrackPlayer.reset();
     await TrackPlayer.add({
         id: 'trackId',
-        url: sound === START_WORK ? require('./android/app/src/main/res/raw/work_time.m4a') : require('./android/app/src/main/res/raw/break_time.m4a'),
+        url: sound === START_WORK ? require('../android/app/src/main/res/raw/work_time.m4a') : require('../android/app/src/main/res/raw/break_time.m4a'),
         title: 'Track Title',
         artist: 'Track Artist',
     });
