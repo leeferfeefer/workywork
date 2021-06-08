@@ -9,12 +9,14 @@ import {
   Alert
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
-import SoundService, {START_WORK, START_BREAK} from './sound.service';
-
+import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
+import FirebaseService from './service/firebase.service';
 
 const App: () => Node = () => {
 
   useEffect(() => {
+
+    await storeToken();
 
     messaging().onNotificationOpenedApp(remoteMessage => {
       showAlert(remoteMessage);
@@ -37,6 +39,11 @@ const App: () => Node = () => {
 
     return unsubscribe;
   }, []);
+
+  const storeToken = async () => {
+    const token = await messaging().getToken();
+    FirebaseService.storeToken(token);
+  }
 
   const showAlert = (remoteMessage) => {
     if (remoteMessage) {
