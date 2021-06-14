@@ -6,7 +6,8 @@ import {
   View,
   Alert,
   Switch,
-  Text
+  Text,
+  ActivityIndicator
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
@@ -18,6 +19,7 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   let fbStateType = isSwitchEnabled ? FirebaseService.FB_STATE_REMOTE : FirebaseService.FB_STATE_LOCAL;
 
@@ -67,12 +69,17 @@ const App = () => {
 
   const toggleSwitch = (state) => {
     setIsSwitchEnabled(previousState => !previousState);
-  }
+  };
 
   return (
     <SafeAreaView>
       <StatusBar barStyle={'dark-content'}/>
       <View style={styles.container}>
+        {isLoading && 
+          <View style={styles.loadingView}>
+            <ActivityIndicator animating size='large' color='red'/>
+          </View>
+        }
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           thumbColor={isSwitchEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -82,10 +89,10 @@ const App = () => {
         <Text>{isSwitchEnabled ? 'Remote' : 'Local'}</Text>
         <View style={styles.innerContainer}>
           {!isLoggedIn &&
-            <LoginButton callback={() => setIsLoggedIn(true)} firebaseStateType={fbStateType}/>
+            <LoginButton callback={() => setIsLoggedIn(true)} firebaseStateType={fbStateType} setLoading={setIsLoading}/>
           }
           {isLoggedIn &&
-            <StartButton/>
+            <StartButton setLoading={setIsLoading}/>
           }
         </View>
       </View>
@@ -97,11 +104,20 @@ const styles = StyleSheet.create({
   container: {
     height: '100%', 
     width: '100%', 
-    backgroundColor: 'white',
+    backgroundColor: 'gray',
     alignItems: 'center'
   },
   innerContainer: {
     marginTop: 500
+  },
+  loadingView: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 

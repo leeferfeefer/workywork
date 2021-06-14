@@ -8,13 +8,16 @@ import {
 import AxiosService from '../service/axios.service';
 
 const StartButton = (props) =>  {
+    const {setLoading} = props;
 
     const startButtonPressed = async () => {
         try {
+            setLoading(true);
             await AxiosService.startTimer();
         } catch (error) {
             console.log("Error in starting timer: ", error);
         }        
+        setLoading(false);
     }
 
     return (    
