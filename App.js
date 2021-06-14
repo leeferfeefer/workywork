@@ -1,24 +1,33 @@
-import React, {useEffect} from 'react';
-import type {Node} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
-  Alert
+  Alert,
+  Switch,
+  Text
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
+import LoginButton from './components/LoginButton';
+import FirebaseService from './service/firebase.service';
+import StartButton from './components/StartButton';
 
-const PUB_SUB_TOPIC = 'notification';
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
+  const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
 
-const App: () => Node = () => {
+  let fbStateType = isSwitchEnabled ? FirebaseService.FB_STATE_REMOTE : FirebaseService.FB_STATE_LOCAL;
 
   useEffect(() => {
+    return messaging().onTokenRefresh(token => {
+      FirebaseService.saveToken(token, fbStateType);
+    });
+  }, []);
 
-    messaging().subscribeToTopic(PUB_SUB_TOPIC).then(() => console.log('Subscribed to topic!'));
-
+  useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
       showAlert(remoteMessage);
     });
@@ -28,12 +37,12 @@ const App: () => Node = () => {
     });
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("Received Message: ", JSON.stringify(remoteMessage));
+      console.log("Received Message in foreground: ", JSON.stringify(remoteMessage));
       if (remoteMessage?.notification?.title === START_BREAK) {
-        SoundService.playSound(START_BREAK);
+        await SoundService.playSound(START_BREAK);
         showAlert(remoteMessage);
       } else if (remoteMessage?.notification?.title === START_WORK) {
-        SoundService.playSound(START_WORK);
+        await SoundService.playSound(START_WORK);
         showAlert(remoteMessage);
       }
     });
@@ -55,12 +64,30 @@ const App: () => Node = () => {
       );
     }
   };
-  
+
+  const toggleSwitch = (state) => {
+    setIsSwitchEnabled(previousState => !previousState);
+  }
+
   return (
     <SafeAreaView>
-      <StatusBar barStyle={'dark-content'} />
+      <StatusBar barStyle={'dark-content'}/>
       <View style={styles.container}>
-        <Text>Hewo</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isSwitchEnabled ? "#f5dd4b" : "#f4f3f4"}
+          onValueChange={toggleSwitch}
+          isEnabled={isSwitchEnabled}
+        />
+        <Text>{isSwitchEnabled ? 'Remote' : 'Local'}</Text>
+        <View style={styles.innerContainer}>
+          {!isLoggedIn &&
+            <LoginButton callback={() => setIsLoggedIn(true)} firebaseStateType={fbStateType}/>
+          }
+          {isLoggedIn &&
+            <StartButton/>
+          }
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -71,8 +98,10 @@ const styles = StyleSheet.create({
     height: '100%', 
     width: '100%', 
     backgroundColor: 'white',
-    justifyContent: 'center',
     alignItems: 'center'
+  },
+  innerContainer: {
+    marginTop: 500
   }
 });
 

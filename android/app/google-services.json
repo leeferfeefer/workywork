@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "347166485639",
-    "project_id": "workywork-9f54a",
-    "storage_bucket": "workywork-9f54a.appspot.com"
+    "project_number": "692035206924",
+    "project_id": "workywork-91b7b",
+    "storage_bucket": "workywork-91b7b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:347166485639:android:b3116c9bd794cade8c1c22",
+        "mobilesdk_app_id": "1:692035206924:android:d91cfe85c06f192c6bd329",
         "android_client_info": {
           "package_name": "com.workywork"
         }
       },
       "oauth_client": [
         {
-          "client_id": "347166485639-9shd08samvkkau2grcomnre63iqru5uo.apps.googleusercontent.com",
+          "client_id": "692035206924-8dnioqmu44eo0dapeeavus3psm76h9v7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDJ7wUs00nbrzdOa7N6MS2qCauErrO3bGU"
+          "current_key": "AIzaSyDaLqGNmbhIq_nH4AA7Cq-bS4-ZmMPlFqo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "347166485639-9shd08samvkkau2grcomnre63iqru5uo.apps.googleusercontent.com",
+              "client_id": "692035206924-8dnioqmu44eo0dapeeavus3psm76h9v7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

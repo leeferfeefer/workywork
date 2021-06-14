@@ -57,3 +57,8 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# Google Firebase
+android/app/google-services.json
+
+.env

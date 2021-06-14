@@ -20,8 +20,8 @@ const start = async (sound) => {
     }  
 };
 
-const playSound = (sound) => {
-    start(sound);
+const playSound = async (sound) => {
+    await start(sound);
 };
 
 const killSound = async () => {
