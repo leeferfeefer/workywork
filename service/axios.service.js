@@ -1,34 +1,16 @@
 import axios from 'axios';
 import { IP } from '@env';
 
-const port = 8080;
-const baseURL = `http://${IP}:${port}`;
+const API_PORT = 8080;
+const LOGGER_PORT = 3000;
+const baseURL = `http://${IP}:`;
 
-const instance = axios.create({
-    baseURL,
+export const apiInstance = axios.create({
+    baseURL: baseURL+API_PORT,
     timeout: 5000,
 });
 
-const saveToken = async (token, uuid) => {
-    try {
-        await instance.post('/token', {token, uuid});
-    } catch (error) {
-        console.log("Could not save token to server: ", error);
-        throw error;
-    }    
-};
-
-const startTimer = async () => {
-    try {
-        await instance.post('/init');
-    } catch (error) {
-        console.log("Could not send message to server: ", JSON.stringify(error));
-        throw error;
-    }
-};
-
-
-export default {
-    saveToken,
-    startTimer
-}
+export const loggerInstance = axios.create({
+    baseURL: baseURL+LOGGER_PORT,
+    timeout: 5000,
+});

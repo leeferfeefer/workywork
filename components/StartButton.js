@@ -1,22 +1,17 @@
 import React from 'react';
 import {
-    View,
     Text,
     TouchableHighlight,
     StyleSheet
 } from 'react-native';
-import AxiosService from '../service/axios.service';
+import APIService from '../service/api.service';
 
 const StartButton = (props) =>  {
     const {setLoading} = props;
 
-    const startButtonPressed = async () => {
-        try {
-            setLoading(true);
-            await AxiosService.startTimer();
-        } catch (error) {
-            console.log("Error in starting timer: ", error);
-        }        
+    const startButtonPressed = async () => {    
+        setLoading(true);
+        await APIService.startTimer();  
         setLoading(false);
     }
 

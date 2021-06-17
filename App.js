@@ -14,6 +14,11 @@ import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
 import LoginButton from './components/LoginButton';
 import FirebaseService from './service/firebase.service';
 import StartButton from './components/StartButton';
+import ApiService from './service/api.service';
+import DeviceInfoService from './service/deviceInfo.service';
+
+const FB_STATE_LOCAL = 'FB_STATE_LOCAL';
+const FB_STATE_REMOTE = 'FB_STATE_REMOTE';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,12 +26,21 @@ const App = () => {
   const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  let fbStateType = isSwitchEnabled ? FirebaseService.FB_STATE_REMOTE : FirebaseService.FB_STATE_LOCAL;
+  let fbStateType = isSwitchEnabled ? FB_STATE_REMOTE : FB_STATE_LOCAL;
+
+  const saveToken = async (refreshToken) => {
+    const token = refreshToken ?? await messaging().getToken();
+    const uuid = DeviceInfoService.getUUID();
+    console.log("token", token)
+    if (fbStateType === FB_STATE_LOCAL) {
+      await FirebaseService.saveToken(token, uuid);
+    } else if (fbStateType === FB_STATE_REMOTE) {
+      await ApiService.saveToken(token, uuid);
+    }
+  };
 
   useEffect(() => {
-    return messaging().onTokenRefresh(token => {
-      FirebaseService.saveToken(token, fbStateType);
-    });
+    return messaging().onTokenRefresh(saveToken);
   }, []);
 
   useEffect(() => {
@@ -89,7 +103,11 @@ const App = () => {
         <Text>{isSwitchEnabled ? 'Remote' : 'Local'}</Text>
         <View style={styles.innerContainer}>
           {!isLoggedIn &&
-            <LoginButton callback={() => setIsLoggedIn(true)} firebaseStateType={fbStateType} setLoading={setIsLoading}/>
+            <LoginButton 
+              onPress={saveToken}
+              onSuccess={() => setIsLoggedIn(true)} 
+              setLoading={setIsLoading}            
+            />
           }
           {isLoggedIn &&
             <StartButton setLoading={setIsLoading}/>

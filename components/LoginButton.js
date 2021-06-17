@@ -1,23 +1,20 @@
 import React from 'react';
 import {
-    View,
     Text,
     TouchableHighlight,
     StyleSheet
 } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
-import FirebaseService from '../service/firebase.service';
+import LoggerService from '../service/logger.service';
 
 const LoginButton = (props) =>  {
-    const {firebaseStateType, setLoading, callback} = props;
+    const {onPress, setLoading, onSuccess} = props;
 
-    const loginButtonPressed = async () => {
+    const loginButtonPressed = async () => {        
         try {
+            await LoggerService.sendLog("DEBUG", "This is a test!");
             setLoading(true);
-            const token = await messaging().getToken();
-            console.log("token", token)
-            await FirebaseService.saveToken(token, firebaseStateType);        
-            callback();
+            await onPress(); // call save token which is passed in
+            onSuccess();
         } catch (error) {
             console.log("Error in logging in. Could not save token: ", error);
         }        
