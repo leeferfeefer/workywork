@@ -1,13 +1,14 @@
 import auth from '@react-native-firebase/auth';
+import LoggerService from './logger.service';
 
 
 const signInAnon = async () => {
     try {
         await auth().signInAnonymously();
-        console.log('User signed in anonymously');
+        LoggerService.sendLog("DEBUG", "User signed in anonymously");        
     } catch (error) {
         if (error.code === 'auth/operation-not-allowed') {
-            console.log('Enable anonymous in your firebase console.');
+            LoggerService.sendLog("Enable anonymous in firebase console.");        
         }
         console.error(error);
     }

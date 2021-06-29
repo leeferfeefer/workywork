@@ -16,6 +16,7 @@ import FirebaseService from './service/firebase.service';
 import StartButton from './components/StartButton';
 import ApiService from './service/api.service';
 import DeviceInfoService from './service/deviceInfo.service';
+import LoggerService from './service/logger.service';
 
 const FB_STATE_LOCAL = 'FB_STATE_LOCAL';
 const FB_STATE_REMOTE = 'FB_STATE_REMOTE';
@@ -31,7 +32,6 @@ const App = () => {
   const saveToken = async (refreshToken) => {
     const token = refreshToken ?? await messaging().getToken();
     const uuid = DeviceInfoService.getUUID();
-    console.log("token", token)
     if (fbStateType === FB_STATE_LOCAL) {
       await FirebaseService.saveToken(token, uuid);
     } else if (fbStateType === FB_STATE_REMOTE) {
@@ -53,7 +53,7 @@ const App = () => {
     });
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("Received Message in foreground: ", JSON.stringify(remoteMessage));
+      await LoggerService.sendLog("DEBUG", "Received in foreground!");
       if (remoteMessage?.notification?.title === START_BREAK) {
         await SoundService.playSound(START_BREAK);
         showAlert(remoteMessage);

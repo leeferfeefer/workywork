@@ -7,7 +7,7 @@ const sendLog = async (type, body) => {
             type,
             body
         });
-    } catch (error) {
+    } catch (error) {        
         console.log("Could not send log: ", error);
     }
 };

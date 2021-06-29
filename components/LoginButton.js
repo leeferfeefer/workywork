@@ -11,12 +11,12 @@ const LoginButton = (props) =>  {
 
     const loginButtonPressed = async () => {        
         try {
-            await LoggerService.sendLog("DEBUG", "This is a test!");
             setLoading(true);
             await onPress(); // call save token which is passed in
             onSuccess();
         } catch (error) {
-            console.log("Error in logging in. Could not save token: ", error);
+            LoggerService.sendLog("ERROR", "Error in logging in. Could not save token");
+            LoggerService.sendLog("ERROR", error);
         }        
         setLoading(false);
     }
