@@ -17,6 +17,7 @@ import StartButton from './components/StartButton';
 import ApiService from './service/api.service';
 import DeviceInfoService from './service/deviceInfo.service';
 import LoggerService from './service/logger.service';
+import SplashScreen from 'react-native-splash-screen'
 
 const FB_STATE_LOCAL = 'FB_STATE_LOCAL';
 const FB_STATE_REMOTE = 'FB_STATE_REMOTE';
@@ -40,6 +41,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    SplashScreen.hide();
     return messaging().onTokenRefresh(saveToken);
   }, []);
 
@@ -86,8 +88,8 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={'dark-content'}/>
+    <>
+      <StatusBar backgroundColor='gray' barStyle="dark-content"/>
       <View style={styles.container}>
         {isLoading && 
           <View style={styles.loadingView}>
@@ -114,7 +116,7 @@ const App = () => {
           }
         </View>
       </View>
-    </SafeAreaView>
+    </>
   );
 };
 
