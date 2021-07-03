@@ -9,6 +9,7 @@ const saveToken = async (token, uuid) => {
     } catch (error) {
         LoggerService.sendLog("ERROR", "Could not save token to server");
         LoggerService.sendLog("ERROR", error);
+        throw error;
     } 
 };
 

@@ -7,6 +7,7 @@ const saveToken = async (token, uuid) => {
     } catch (error) {
         LoggerService.sendLog("ERROR", "Could not save token to server");
         LoggerService.sendLog("ERROR", error);
+        throw error;
     }    
 };
 
@@ -15,7 +16,7 @@ const startTimer = async () => {
         await apiInstance.post('/init');
     } catch (error) {
         LoggerService.sendLog("ERROR", "Could not send message to server");
-        LoggerService.sendLog("ERROR", error);
+        LoggerService.sendLog("ERROR", error);        
     }
 };
 

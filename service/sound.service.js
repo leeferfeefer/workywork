@@ -15,7 +15,7 @@ const playSound = async (sound) => {
             artist: 'Track Artist',
         });
         await TrackPlayer.play();
-        await LoggerService.sendLog("DEBUG", "Playing sound...");
+        LoggerService.sendLog("DEBUG", "Playing sound...");
     } catch (error) {
         LoggerService.sendLog("ERROR", "Failure in playing sound");
         LoggerService.sendLog("ERROR", error);
@@ -25,7 +25,7 @@ const playSound = async (sound) => {
 const killSound = async () => {
     try {
         await TrackPlayer.stop();
-        await LoggerService.sendLog("DEBUG", "Killing sound...");
+        LoggerService.sendLog("DEBUG", "Killing sound...");
     } catch (error) {
         LoggerService.sendLog("ERROR", "Failure in killing sound");
         LoggerService.sendLog("ERROR", error);
