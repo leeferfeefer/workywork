@@ -13,6 +13,17 @@ const saveToken = async (token, uuid) => {
     } 
 };
 
+const getUserState = async (uuid) => {
+    try {
+        return {};
+    } catch (error) {
+        LoggerService.sendLog("ERROR", `Could not get state from user: ${uuid}`);
+        LoggerService.sendLog("ERROR", error);
+        throw error;
+    }
+}
+
 export default {
-    saveToken
+    saveToken,
+    getUserState
 }

@@ -4,7 +4,6 @@ import {
 	StatusBar,
 	StyleSheet,
 	View,
-	Alert,
 	Switch,
 	Text,
 	ActivityIndicator
@@ -13,11 +12,12 @@ import messaging from '@react-native-firebase/messaging';
 import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
 import LoginButton from './components/LoginButton';
 import FirebaseService from './service/firebase.service';
-import StartButton from './components/StartButton';
 import ApiService from './service/api.service';
 import DeviceInfoService from './service/deviceInfo.service';
 import LoggerService from './service/logger.service';
 import SplashScreen from 'react-native-splash-screen'
+import AlertService from './service/alert.service';
+import TimerButton from './components/TimerButton';
 
 const FB_STATE_LOCAL = 'FB_STATE_LOCAL';
 const FB_STATE_REMOTE = 'FB_STATE_REMOTE';
@@ -45,61 +45,57 @@ const App = () => {
 		return messaging().onTokenRefresh(saveToken);
 	}, []);
 
+    const showNotificationAlert = () => {
+        AlertService.show(
+            remoteMessage.notification?.title,
+            remoteMessage.notification?.body,
+            SoundService.killSound
+        );
+    }
+
 	useEffect(() => {
 		messaging().onNotificationOpenedApp(remoteMessage => {
-			showAlert(remoteMessage);
+            if (remoteMessage) {
+                showNotificationAlert();
+            }			
 		});
 
 		messaging().getInitialNotification().then(remoteMessage => {
-			showAlert(remoteMessage);
+			if (remoteMessage) {
+                showNotificationAlert();
+            }
 		});
 
 		const unsubscribe = messaging().onMessage(async remoteMessage => {
 			LoggerService.sendLog("DEBUG", "Received in foreground!");
 			if (remoteMessage?.notification?.title === START_BREAK) {
 				await SoundService.playSound(START_BREAK);
-				showAlert(remoteMessage);
+				showNotificationAlert();
 			} else if (remoteMessage?.notification?.title === START_WORK) {
 				await SoundService.playSound(START_WORK);
-				showAlert(remoteMessage);
+				showNotificationAlert();
 			}
 		});
-
 		return unsubscribe;
 	}, []);
-
-	const showAlert = (remoteMessage) => {
-		if (remoteMessage) {
-			Alert.alert(
-				remoteMessage?.notification?.title, 
-				remoteMessage?.notification?.body,
-				[
-					{
-						text: "Got it",
-						onPress: SoundService.killSound
-					}    
-				]
-			);
-		}
-	};
 
 	const toggleSwitch = (state) => {
 		setIsSwitchEnabled(previousState => !previousState);
 	};
 
-	const loginButtonPressed = async () => {
-        try {
-            await saveToken();
-
-            // check if timer state is true here
-
-        } catch (error) {
-            Alert.alert("Uh-oh!", `Could not login due to error: ${error}`);
+    const loginOnSuccess = (userState) => {
+        setIsLoggedIn(true)
+        if (userState.timer.started) {
+            // change state of UI
+            setIsStarted(true);
+        } else {
+            // change state of UI
+            setIsStarted(false);
         }
-	};
+    }
 
 	return (
-		<>
+		<SafeAreaView>
 			<StatusBar backgroundColor='gray' barStyle="dark-content"/>
 			<View style={styles.container}>
 				{isLoading && 
@@ -117,17 +113,20 @@ const App = () => {
 				<View style={styles.innerContainer}>
 					{!isLoggedIn &&
 						<LoginButton 
-							onPress={loginButtonPressed}
-							onSuccess={() => setIsLoggedIn(true)} 
+							onPress={saveToken}
+							onSuccess={loginOnSuccess} 
 							setLoading={setIsLoading}            
 						/>
 					}
 					{isLoggedIn &&
-						<StartButton setLoading={setIsLoading}/>
+						<TimerButton 
+                            setLoading={setIsLoading} 
+                            timerState={isStarted}
+                        />
 					}
 				</View>
 			</View>
-		</>
+		</SafeAreaView>
 	);
 };
 

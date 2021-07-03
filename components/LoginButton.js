@@ -4,19 +4,18 @@ import {
     TouchableHighlight,
     StyleSheet
 } from 'react-native';
-import LoggerService from '../service/logger.service';
 
 const LoginButton = (props) =>  {
     const {onPress, setLoading, onSuccess} = props;
 
     const loginButtonPressed = async () => {        
+        setLoading(true);
         try {
-            setLoading(true);
             await onPress(); // call save token which is passed in
-            onSuccess();
+            const userState = await getUserState();
+            onSuccess(userState);
         } catch (error) {
-            LoggerService.sendLog("ERROR", "Error in logging in. Could not save token");
-            LoggerService.sendLog("ERROR", error);
+            AlertService.show("Uh-oh!", `Could not login due to error: ${error}`);
         }        
         setLoading(false);
     }

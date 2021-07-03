@@ -13,15 +13,27 @@ const saveToken = async (token, uuid) => {
 
 const startTimer = async () => {
     try {
-        await apiInstance.post('/init');
+        await apiInstance.post('/timer/start');
     } catch (error) {
-        LoggerService.sendLog("ERROR", "Could not send message to server");
-        LoggerService.sendLog("ERROR", error);        
+        LoggerService.sendLog("ERROR", "Could not send start message to server");
+        LoggerService.sendLog("ERROR", error);   
+        throw error;     
     }
 };
+
+const stopTimer = async () => {
+    try {
+        await apiInstance.post('/timer/stop');
+    } catch (error) {
+        LoggerService.sendLog("ERROR", "Could not send stop message to server");
+        LoggerService.sendLog("ERROR", error);   
+        throw error;     
+    }
+}
 
 
 export default {
     saveToken,
-    startTimer
+    startTimer,
+    stopTimer
 }
