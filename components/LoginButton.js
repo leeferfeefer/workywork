@@ -12,8 +12,7 @@ const LoginButton = (props) =>  {
         setLoading(true);
         try {
             await onPress(); // call save token which is passed in
-            const userState = await getUserState();
-            onSuccess(userState);
+            onSuccess();
         } catch (error) {
             AlertService.show("Uh-oh!", `Could not login due to error: ${error}`);
         }        

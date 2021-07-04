@@ -1,44 +1,54 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
 	SafeAreaView,
 	StatusBar,
 	StyleSheet,
 	View,
-	Switch,
-	Text,
+	AppState,
 	ActivityIndicator
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import SoundService, {START_WORK, START_BREAK} from './service/sound.service';
 import LoginButton from './components/LoginButton';
-import FirebaseService from './service/firebase.service';
 import ApiService from './service/api.service';
 import DeviceInfoService from './service/deviceInfo.service';
 import LoggerService from './service/logger.service';
 import SplashScreen from 'react-native-splash-screen'
 import AlertService from './service/alert.service';
 import TimerButton from './components/TimerButton';
-
-const FB_STATE_LOCAL = 'FB_STATE_LOCAL';
-const FB_STATE_REMOTE = 'FB_STATE_REMOTE';
+import apiService from './service/api.service';
 
 const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [isStarted, setIsStarted] = useState(false);
-	const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-
-	let fbStateType = isSwitchEnabled ? FB_STATE_REMOTE : FB_STATE_LOCAL;
+    const [timerState, setTimerState] = useState(false);
+    const uuid = DeviceInfoService.getUUID();
+    const appState = useRef(AppState.currentState);
 
 	const saveToken = async (refreshToken) => {
         const token = refreshToken ?? await messaging().getToken();
-        const uuid = DeviceInfoService.getUUID();
-        if (fbStateType === FB_STATE_LOCAL) {
-            await FirebaseService.saveToken(token, uuid);
-        } else if (fbStateType === FB_STATE_REMOTE) {
-            await ApiService.saveToken(token, uuid);
-        }
+        await ApiService.saveToken(token, uuid);
 	};
+  
+    useEffect(() => {
+        getUserInfo();
+        AppState.addEventListener("change", _handleAppStateChange);
+        return () => {
+            AppState.removeEventListener("change", _handleAppStateChange);
+        };
+    }, []);
+  
+    const _handleAppStateChange = (nextAppState) => {
+        if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+            getUserInfo();
+        }
+        appState.current = nextAppState;
+    };
+
+    const getUserInfo = async () => {
+        const response = await apiService.getUserInfo(uuid);
+        setTimerState(response?.data?.timerState);
+    };
 
 	useEffect(() => {
 		SplashScreen.hide();
@@ -79,19 +89,8 @@ const App = () => {
 		return unsubscribe;
 	}, []);
 
-	const toggleSwitch = (state) => {
-		setIsSwitchEnabled(previousState => !previousState);
-	};
-
-    const loginOnSuccess = (userState) => {
+    const loginOnSuccess = () => {
         setIsLoggedIn(true)
-        if (userState.timer.started) {
-            // change state of UI
-            setIsStarted(true);
-        } else {
-            // change state of UI
-            setIsStarted(false);
-        }
     }
 
 	return (
@@ -103,13 +102,6 @@ const App = () => {
 						<ActivityIndicator animating size='large' color='red'/>
 					</View>
 				}
-				<Switch
-					trackColor={{ false: "#767577", true: "#81b0ff" }}
-					thumbColor={isSwitchEnabled ? "#f5dd4b" : "#f4f3f4"}
-					onValueChange={toggleSwitch}
-					isEnabled={isSwitchEnabled}
-				/>
-				<Text>{isSwitchEnabled ? 'Remote' : 'Local'}</Text>
 				<View style={styles.innerContainer}>
 					{!isLoggedIn &&
 						<LoginButton 
@@ -121,7 +113,8 @@ const App = () => {
 					{isLoggedIn &&
 						<TimerButton 
                             setLoading={setIsLoading} 
-                            timerState={isStarted}
+                            timerState={timerState}
+                            setTimerState={setTimerState}
                         />
 					}
 				</View>

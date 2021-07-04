@@ -6,17 +6,21 @@ import {
 } from 'react-native';
 import APIService from '../service/api.service';
 import AlertService from '../service/alert.service';
+import DeviceInfoService from '../service/deviceInfo.service';
 
 const TimerButton = (props) =>  {
-    const {setLoading, timerState} = props;
+    const {setLoading, timerState, setTimerState} = props;
+    const uuid = DeviceInfoService.getUUID();
 
     const timerButtonPressed = async () => {    
         setLoading(true);
         try {
             if (timerState) {
-                await APIService.stopTimer();
+                await APIService.stopTimer(uuid);
+                setTimerState(false);
             } else if (!timerState) {
-                await APIService.startTimer();
+                await APIService.startTimer(uuid);
+                setTimerState(true);
             }
         } catch (error) {
             AlertService.show("Uh-oh!", `Could not change timer state based on error: ${error}`);
@@ -26,7 +30,7 @@ const TimerButton = (props) =>  {
 
     return (    
         <TouchableHighlight style={{...styles.button, backgroundColor: timerState ? 'red': 'green'}} onPress={timerButtonPressed}>
-            <Text style={styles.buttonText}>Start</Text>
+            <Text style={styles.buttonText}>{timerState ? 'Stop': 'Start'}</Text>
         </TouchableHighlight>
     )
 };
