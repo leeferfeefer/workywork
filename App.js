@@ -27,7 +27,7 @@ const App = () => {
 
 	const saveToken = async (refreshToken) => {
         const token = refreshToken ?? await messaging().getToken();
-        await ApiService.saveToken(token, uuid);
+        await ApiService.saveToken(uuid, token);
 	};
   
     useEffect(() => {
