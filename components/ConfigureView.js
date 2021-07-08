@@ -42,6 +42,7 @@ const ConfigureView = (props) => {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.titleText}>No need to type https://</Text>
             <TextInput 
                 style={styles.textInput}
                 placeholderTextColor='gray' 
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         backgroundColor: 'white',
-        width: 300
+        alignItems: 'center'
     },
     button: {        
         height: 50, 
@@ -84,6 +85,11 @@ const styles = StyleSheet.create({
     textInput: {
         borderWidth: 1,
         borderColor: 'black',
+        color: 'black',
+        width: 250,
+        textAlign: 'center'
+    },
+    titleText: {
         color: 'black'
     }
 });
