@@ -17,11 +17,14 @@ import SplashScreen from 'react-native-splash-screen'
 import AlertService from './service/alert.service';
 import TimerButton from './components/TimerButton';
 import apiService from './service/api.service';
+import ConfigureButton from './components/ConfigureButton';
+import ConfigureView from './components/ConfigureView';
 
 const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
     const [timerState, setTimerState] = useState(false);
+    const [isConfigureShowing, setIsConfigureShowing] = useState(false);
     const uuid = DeviceInfoService.getUUID();
     const appState = useRef(AppState.currentState);
 
@@ -46,8 +49,12 @@ const App = () => {
     };
 
     const getUserInfo = async () => {
-        const response = await apiService.getUserInfo(uuid);
-        setTimerState(response?.data?.timerState);
+        try {
+            const response = await apiService.getUserInfo(uuid);
+            setTimerState(response?.data?.timerState);
+        } catch (error) {
+            AlertService.show("Uh-oh!", `Could not get user info due to error: ${error}`);
+        }
     };
 
 	useEffect(() => {
@@ -93,6 +100,10 @@ const App = () => {
         setIsLoggedIn(true)
     }
 
+    const configureButtonPressed = () => {
+        setIsConfigureShowing((currentState) => !currentState);
+    }
+
 	return (
 		<SafeAreaView>
 			<StatusBar backgroundColor='gray' barStyle="dark-content"/>
@@ -102,7 +113,13 @@ const App = () => {
 						<ActivityIndicator animating size='large' color='red'/>
 					</View>
 				}
-				<View style={styles.innerContainer}>
+                {isConfigureShowing && 
+                    <ConfigureView/>
+                }
+				<View style={styles.innerContainer}>                    
+
+                    <ConfigureButton onPress={configureButtonPressed}/>
+
 					{!isLoggedIn &&
 						<LoginButton 
 							onPress={saveToken}
@@ -128,11 +145,12 @@ const styles = StyleSheet.create({
 		height: '100%', 
 		width: '100%', 
 		backgroundColor: 'gray',
-		alignItems: 'center'
+		alignItems: 'center',
+        justifyContent: 'space-evenly'
 	},
 	innerContainer: {
-		marginTop: 500
-	},
+        
+    },
 	loadingView: {
 		position: 'absolute',
 		left: 0,

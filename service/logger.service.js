@@ -1,8 +1,8 @@
-import { loggerInstance } from './axios.service';
+import AxiosService from './axios.service';
 
 const sendLog = async (type, body) => {
     try {
-        await loggerInstance.post('/log', {
+        await AxiosService.getLoggerInstance().post('/log', {
             appName: 'WorkyWork',
             type,
             body

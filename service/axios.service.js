@@ -1,16 +1,56 @@
 import axios from 'axios';
-import { IP } from '@env';
+import { MMKV } from 'react-native-mmkv';
 
-const API_PORT = 8080;
-const LOGGER_PORT = 3000;
-const baseURL = `http://${IP}:`;
+const API_URL = 'API_URL';
+const LOGGER_URL = 'LOGGER_URL';
 
-export const apiInstance = axios.create({
-    baseURL: baseURL+API_PORT,
-    timeout: 5000,
-});
+const saveUrls = (apiUrl, loggerUrl) => {
+    if (!apiUrl || !loggerUrl) {
+        throw new Error("Cannot save invalid urls");
+    }
+    MMKV.set(API_URL, apiUrl);
+    MMKV.set(LOGGER_URL, loggerUrl);
+};
 
-export const loggerInstance = axios.create({
-    baseURL: baseURL+LOGGER_PORT,
-    timeout: 5000,
-});
+const _getUrls = () => {
+    const apiUrl = MMKV.getString(API_URL);
+    const loggerUrl = MMKV.getString(LOGGER_URL);
+
+    if (!apiUrl || !loggerUrl) {
+        throw new Error("Cannot retrieve urls");
+    }
+    return {
+        apiUrl,
+        loggerUrl
+    }
+}
+
+let apiInstance;
+const getApiInstance = () => {
+    const urls = _getUrls();    
+    if (!apiInstance) {
+        apiInstance = axios.create({
+            baseURL: urls.apiUrl,
+            timeout: 5000
+        });
+    }
+    return apiInstance;
+};
+
+let loggerInstance;
+const getLoggerInstance = () => {
+    const urls = _getUrls();    
+    if (!loggerInstance) {
+        loggerInstance = axios.create({
+            baseURL: urls.loggerUrl,
+            timeout: 5000
+        });
+    }
+    return loggerInstance;
+};
+
+export default {
+    saveUrls,
+    getApiInstance,
+    getLoggerInstance
+}
