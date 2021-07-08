@@ -12,45 +12,24 @@ const saveUrls = (apiUrl, loggerUrl) => {
     MMKV.set(LOGGER_URL, loggerUrl);
 };
 
-const _getUrls = () => {
+const getApiUrl = () => {
     const apiUrl = MMKV.getString(API_URL);
-    const loggerUrl = MMKV.getString(LOGGER_URL);
-
-    if (!apiUrl || !loggerUrl) {
-        throw new Error("Cannot retrieve urls");
+    if (!apiUrl) {
+        throw new Error("Cannot retrieve api url");
     }
-    return {
-        apiUrl,
-        loggerUrl
-    }
-}
-
-let apiInstance;
-const getApiInstance = () => {
-    const urls = _getUrls();    
-    if (!apiInstance) {
-        apiInstance = axios.create({
-            baseURL: urls.apiUrl,
-            timeout: 5000
-        });
-    }
-    return apiInstance;
+    return apiUrl;
 };
 
-let loggerInstance;
-const getLoggerInstance = () => {
-    const urls = _getUrls();    
-    if (!loggerInstance) {
-        loggerInstance = axios.create({
-            baseURL: urls.loggerUrl,
-            timeout: 5000
-        });
+const getLoggerUrl = () => {
+    const loggerUrl = MMKV.getString(LOGGER_URL);
+    if (!loggerUrl) {
+        throw new Error("Cannot retrieve urls");
     }
-    return loggerInstance;
+    return loggerUrl;
 };
 
 export default {
     saveUrls,
-    getApiInstance,
-    getLoggerInstance
+    getApiUrl,
+    getLoggerUrl
 }

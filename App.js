@@ -114,7 +114,7 @@ const App = () => {
 					</View>
 				}
                 {isConfigureShowing && 
-                    <ConfigureView/>
+                    <ConfigureView hideConfigureView={() => setIsConfigureShowing(false)}/>
                 }
 				<View style={styles.innerContainer}>                    
 

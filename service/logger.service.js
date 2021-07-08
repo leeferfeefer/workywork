@@ -1,8 +1,9 @@
+import axios from "axios";
 import AxiosService from './axios.service';
 
 const sendLog = async (type, body) => {
     try {
-        await AxiosService.getLoggerInstance().post('/log', {
+        await axios.post(`https://${AxiosService.getLoggerUrl()}/log`, {
             appName: 'WorkyWork',
             type,
             body

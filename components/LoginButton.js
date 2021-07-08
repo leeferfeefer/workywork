@@ -4,6 +4,7 @@ import {
     TouchableHighlight,
     StyleSheet
 } from 'react-native';
+import AlertService from '../service/alert.service';
 
 const LoginButton = (props) =>  {
     const {onPress, setLoading, onSuccess} = props;

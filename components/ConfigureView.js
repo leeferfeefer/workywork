@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     TextInput,
@@ -10,12 +10,21 @@ import AxiosService from '../service/axios.service';
 import AlertService from '../service/alert.service';
 
 const ConfigureView = (props) => {
+    const {hideConfigureView} = props;
     const [apiUrl, setApiUrl] = useState('');
     const [loggerUrl, setLoggerUrl] = useState('');
+
+    useEffect(() => {
+        try {
+            setApiUrl(AxiosService.getApiUrl());
+            setLoggerUrl(AxiosService.getLoggerUrl());
+        } catch (error) {}
+    }, []);
 
     const saveButtonPressed = () => {
         try {
             AxiosService.saveUrls(apiUrl, loggerUrl);
+            AlertService.show("Nice!", "Url values saved!", hideConfigureView);
         } catch (error) {
             AlertService.show('Uh-oh!', `Could not save due to error: ${error}`);
         }
@@ -38,12 +47,14 @@ const ConfigureView = (props) => {
                 placeholderTextColor='gray' 
                 placeholder='api url' 
                 onChangeText={onApiUrlTextInputChange}
+                value={apiUrl}
             />
             <TextInput                 
                 style={styles.textInput}
                 placeholderTextColor='gray'
                 placeholder='logger url' 
                 onChangeText={onLoggerUrlTextInputChange}
+                value={loggerUrl}
             />
             <TouchableHighlight disabled={isSaveDisabled} style={[styles.button, {backgroundColor: isSaveDisabled ? 'gray': 'blue'}]} onPress={saveButtonPressed}>
                 <Text style={styles.buttonText}>Save</Text>
